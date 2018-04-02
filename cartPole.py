@@ -17,7 +17,6 @@ new_obs_space_high = [env.observation_space.high[0], 0.5,  env.observation_space
 #Create Q Table
 Q_table = np.zeros(BUCKETS + (env.action_space.n,)) 
 
-
 def map_state(state):
     new_state = []
     for i in range(len(state)):
@@ -49,12 +48,12 @@ def simulate(N_EPISODES, MAX_STEPS, epsilon, alpha, gamma):
 		init_state = map_state(env.reset())
 		state = init_state
 		for step in range(MAX_STEPS):
-
+			env.render()
 			action = choose_action(state, epsilon)
 			observation, reward, done, info = env.step(action)
 			next_state = map_state(observation)
 			update_Q_table(state, next_state, action, reward, alpha, gamma)
-
+			state = next_state
 			if done:
 				print("Episode finished after {} timesteps".format(step+1))
 				break
@@ -63,17 +62,6 @@ def simulate(N_EPISODES, MAX_STEPS, epsilon, alpha, gamma):
 if __name__ == '__main__':
 	simulate(N_EPISODES = 100,
 			MAX_STEPS = 200,
-			epsilon = 0.05,
-			alpha = 0.1,
+			epsilon = 0.9,
+			alpha = 0.5,
 			gamma = 0.9)
-
-
-
-
-
-
-
-
-
-
-
