@@ -9,7 +9,8 @@ import numpy as np
 BUCKETS = (1,1,6,3)	#constrain the continuous feature space to discrete values
 MIN_EPSILON = 0.001
 MIN_ALPHA = 0.01
-
+N_EPISODES = 200
+MAX_STEPS = 199
 env = gym.make('CartPole-v0')
 
 #Constraint the observation space to reduce learning complexity
@@ -45,16 +46,16 @@ def update_Q_table(prev_state, next_state, action, reward, alpha, gamma):
 	Q_table[prev_state][action] += alpha * (reward + gamma * np.max(Q_table[next_state]) - Q_table[prev_state][action])
 
 def get_explore_rate(t):
-    return max(MIN_EPSILON, min(0.8, 1.0 - np.log((t+1)/10)))
+    return max(MIN_EPSILON, min(0.8, 1.0 - np.log((t+1)/30)))
 
 def get_learning_rate(t):
-    return max(MIN_ALPHA, min(0.5, 1.0 - np.log((t+1)/10)))
+    return max(MIN_ALPHA, min(0.5, 1.0 - np.log((t+1)/30)))
 
-def simulate(N_EPISODES, MAX_STEPS, gamma):
+def simulate(n_episodes, gamma):
 	epsilon = get_explore_rate(0)
 	alpha = get_learning_rate(0)
 
-	for episode in range(N_EPISODES):
+	for episode in range(n_episodes):
 		init_state = map_state(env.reset())
 		state = init_state
 
@@ -67,18 +68,13 @@ def simulate(N_EPISODES, MAX_STEPS, gamma):
 			update_Q_table(state, next_state, action, reward, alpha, gamma)
 			state = next_state
 
-			
 			if done:
-				print("Episode finished after {} timesteps".format(step+1))
 				break
-		if (True):
-				print ("Epi: {} Step: {} epsilon: {} alpha: {}"
-					.format(episode, step, epsilon, alpha))
+		
+		print ("Epi: {} Step: {} epsilon: {} alpha: {}".format(episode, step, epsilon, alpha))
 		#update learning and explore rate
 		epsilon = get_explore_rate(episode)
 		alpha = get_learning_rate(episode)
 
 if __name__ == '__main__':
-	simulate(N_EPISODES = 300,
-			MAX_STEPS = 200,
-			gamma = 0.99) #gamma 0.99 is very important anything less affects the behavior drastically
+	simulate(n_episodes = N_EPISODES, gamma = 0.99) #gamma 0.99 is very important anything less affects the behavior drastically
